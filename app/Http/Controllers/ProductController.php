@@ -11,35 +11,7 @@ class ProductController extends Controller {
     /**
     * Display a listing of the resource.
     */
-    public function addToCart(Request $request, $productId)
-{
-    $product = Product::find($productId);
 
-    if (!$product) {
-        return redirect()->back()->with('error', 'Product not found.');
-    }
-
-    $session_id = session()->getId();
-
-    if (Auth::check()) {
-        $cart = Cart::where('user_id', Auth::id())->where('product_id', $productId)->first();
-    } else {
-        $cart = Cart::where('session_id', $session_id)->where('product_id', $productId)->first();
-    }
-
-    if ($cart) {
-        $cart->increment('quantity'); // This increments the quantity directly
-    } else {
-        Cart::create([
-            'user_id' => Auth::id() ? Auth::id() : null,
-            'session_id' => Auth::check() ? null : $session_id,
-            'product_id' => $productId,
-            'quantity' => 1,
-        ]);
-    }
-
-    return redirect()->back()->with('success', 'Product added to cart.');
-}
     public function index()
     {
         // Fetch distinct categories from products table

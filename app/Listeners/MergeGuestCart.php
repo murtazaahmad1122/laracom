@@ -5,8 +5,11 @@ use App\Models\Cart;
 use Illuminate\Auth\Events\Authenticated;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Queue\InteractsWithQueue;
+// use Illuminate\Support\Facades\Log;
 
-class MergeGuestCart
+use Illuminate\Support\Facades\Log;
+
+class MergeGuestCart implements ShouldQueue
 {
     /**
      * Handle the event.
@@ -17,10 +20,14 @@ class MergeGuestCart
     public function handle(Authenticated $event)
     {
         $user = $event->user;
-        $sessionId = session()->getId();
+        $oldSessionId = session()->get('guest_session_id'); // Retrieve stored guest session ID
+
+        if (!$oldSessionId) {
+            return;
+        }
 
         // Get the guest's cart items
-        $guestCartItems = Cart::where('session_id', $sessionId)->get();
+        $guestCartItems = Cart::where('session_id', $oldSessionId)->get();
 
         foreach ($guestCartItems as $item) {
             // Check if the product is already in the user's cart
@@ -39,5 +46,9 @@ class MergeGuestCart
                 $item->save();
             }
         }
+
+        // Clear the guest session ID from the user session
+        session()->forget('guest_session_id');
     }
+
 }

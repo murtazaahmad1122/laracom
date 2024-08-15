@@ -65,19 +65,77 @@
 
 
     <script>
-   $('.add-to-cart-btn').click(function (e) {
-    console.log('clicking');
-    e.preventDefault();
+    // Add to Cart with AJAX
+    $('.add-to-cart-btn').click(function (e) {
+        e.preventDefault();
 
-    let url = $(this).data('url'); // The URL should be like `/cart/add/{id}` or a route name that expects an ID.
+        let url = $(this).data('url'); // URL to add to cart
 
-    $.post(url, {
-        _token: '{{ csrf_token() }}' // Always include CSRF token for POST requests.
-    }, function (data) {
-        alert('Product added to cart'); // Handle success response.
+        $.post(url, {
+            _token: '{{ csrf_token() }}' // CSRF token for security
+        }, function (data) {
+            if (data.success) {
+                // Product successfully added to cart
+                alert('Product added to cart!');
+                updateMiniCart(); // Automatically update the mini cart after adding product
+            } else {
+                alert('Error adding product to cart.');
+            }
+        }).fail(function () {
+            alert('Something went wrong!');
+        });
     });
-});
-</script>  
+
+    // Function to Update Mini Cart
+    function updateMiniCart() {
+        $.get("{{ route('cart.items') }}", function (data) {
+            // Update the cart notification counter
+            $('.cart-notification').text(data.totalCount);
+
+            // Clear and populate the cart list with new items
+            let cartList = $('.cart-list');
+            cartList.empty(); // Clear the existing cart items
+
+            // Loop through the items and append them dynamically
+            data.items.forEach(function (item) {
+                cartList.append(`
+                    <li>
+                        <div class="cart-img">
+                            <a href="/product-details/${item.id}"><img src="${item.image_path}" alt="${item.title}"></a>
+                        </div>
+                        <div class="cart-info">
+                            <h4><a href="/product-details/${item.id}">${item.title}</a></h4>
+                            <span>$${item.price.toFixed(2)}</span> x ${item.quantity}
+                        </div>
+                        <div class="del-icon">
+                            <i class="fa fa-times" onclick="removeFromCart(${item.id})"></i>
+                        </div>
+                    </li>
+                `);
+            });
+
+            // Append the subtotal and checkout button after all products
+            cartList.append(`
+                <li class="mini-cart-price">
+                    <span class="subtotal">subtotal : </span>
+                    <span class="subtotal-price">PK${data.totalPrice.toFixed(0)}</span>
+                </li>
+                <li class="checkout-btn">
+                    <a href="/checkout">checkout</a>
+                </li>
+            `);
+
+            // Update the total price outside of the list
+            $('.cart-total-price').html('<span>total:</span> PK' + data.totalPrice.toFixed(0));
+        });
+    }
+
+    // Call the update function when the page loads to initialize the cart
+    $(document).ready(function () {
+        updateMiniCart(); // Initialize mini cart on page load
+    });
+</script>
+
 
     </body>
 </html>

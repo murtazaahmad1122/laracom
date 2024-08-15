@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\CartController;
 
 Route::get('/', [ProductController::class, 'index'])->name('index');
 Route::get('/products/{id}', [ProductController::class, 'show'])->name('product-details');
@@ -10,8 +11,11 @@ Route::get('/products/{id}', [ProductController::class, 'show'])->name('product-
 // Route::get('/', function () {
 //     return view('index');
 // });
-
-Route::post('/add-to-cart/{id}', [ProductController::class, 'addToCart'])->name('add-to-cart');
+Route::post('/cart/add/{id}', [CartController::class, 'add'])->name('add-to-cart');
+Route::get('/cart', [CartController::class, 'show'])->name('cart.show');
+Route::get('/cart/items', [CartController::class, 'getCartItems'])->name('cart.items');
+Route::put('/cart/update/{id}', [CartController::class, 'update'])->name('cart.update');
+Route::delete('/cart/remove/{id}', [CartController::class, 'remove'])->name('cart.remove');
 
 Route::get('/term', function () {
     return view('term');

@@ -28,23 +28,33 @@
                                             my account
                                             <i class="fa fa-angle-down"></i>
                                         </a>
-                                        <div class="dropdown-menu" aria-labelledby="myaccount">
-                                            <a class="dropdown-item" href="my-account.html">my account</a>
-                                             <form action="{{route('logout')}}" method="POST">
-                                                @csrf
-                                            <button type="submit" class="dropdown-item"> logout</button>
-                                            </form>
-                                            <!-- <a class="dropdown-item" href="login-register.html">register</a> -->
-                                        </div>
+                                        @auth
+                                            <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                <a class="dropdown-item" href="">My Account</a>
+                                                <form action="{{ route('logout') }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="dropdown-item">Logout</button>
+                                                </form>
+                                            </div>
+                                        @endauth
+
+                                            <!-- Check if the user is a guest (not logged in) -->
+                                        @guest
+                                            <div class="dropdown-menu" aria-labelledby="myaccount">
+                                                <a class="dropdown-item" href="{{ route('login') }}">Login</a>
+                                                <!-- Uncomment the register link if needed -->
+                                                <!-- <a class="dropdown-item" href="{{ route('register') }}">Register</a> -->
+                                            </div>
+                                        @endguest
                                     </div>
                                 </li>
-                              
-                                <li>
-                                    <a href="#">my cart</a>
-                                </li>
-                                <li>
-                                    <a href="#">checkout</a>
-                                </li>
+                                
+                                    <li>
+                                        <a href="#">my cart</a>
+                                    </li>
+                                    <li>
+                                        <a href="#">checkout</a>
+                                    </li>
                             </ul>
                         </nav>
                     </div>
@@ -208,15 +218,16 @@
                                 </ul>
                             </nav>
                         </div>
+       
                         <div class="mini-cart2">
                             <div class="header-mini-cart">
                                 <div class="mini-cart-btn">
                                     <i class="fa fa-shopping-cart"></i>
-                                    <span class="cart-notification">2</span>
+                                    <span class="cart-notification"></span>
                                 </div>
                                 <div class="cart-total-price">
                                     <span>total:</span>
-                                    $50.00
+                                 
                                 </div>
                                 <ul class="cart-list">
                                     <li>
@@ -253,6 +264,9 @@
                                 </ul>
                             </div>
                         </div>
+
+
+
                     </div>
                 </div>
                 <div class="col-12 d-block d-lg-none"><div class="mobile-menu mean-4"></div></div>
